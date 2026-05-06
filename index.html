@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Palm Snap Camera</title>
+  <title>Palm Stack Level 1</title>
   <style>
     * { box-sizing: border-box; }
     :root { color-scheme: dark; }
@@ -11,164 +11,127 @@
       margin: 0;
       min-height: 100vh;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 50%, #020617 100%);
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 46%, #020617 100%);
       color: #fff;
       display: flex;
       justify-content: center;
+      overflow-x: hidden;
     }
     .app {
       width: min(100%, 440px);
       min-height: 100vh;
-      padding: max(18px, env(safe-area-inset-top)) 18px max(22px, env(safe-area-inset-bottom));
+      padding: max(14px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
-    header { text-align: center; padding-top: 4px; }
-    h1 { margin: 0; font-size: 29px; letter-spacing: -0.04em; }
-    .subtitle { margin: 8px 0 0; color: #cbd5e1; font-size: 13px; line-height: 1.5; }
-    .camera-card {
+    header { text-align: center; }
+    h1 { margin: 0; font-size: 28px; letter-spacing: -0.04em; }
+    .subtitle { margin: 6px 0 0; color: #cbd5e1; font-size: 13px; line-height: 1.45; }
+    .stage-wrap {
       position: relative;
       overflow: hidden;
       border-radius: 28px;
       background: #020617;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-      aspect-ratio: 3 / 4;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      aspect-ratio: 9 / 16;
+      border: 1px solid rgba(255,255,255,0.12);
+      touch-action: none;
+      user-select: none;
     }
-    video, canvas, .placeholder, .selected-image, .overlay-canvas {
-      width: 100%; height: 100%; display: block; object-fit: cover;
-    }
-    video { transform: scaleX(-1); }
-    canvas { display: none; }
-    .selected-image { display: none; }
-    .overlay-canvas {
+    video, canvas, .placeholder {
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      z-index: 2;
-      transform: scaleX(-1);
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
     }
+    video {
+      opacity: 0.34;
+      transform: scaleX(-1);
+      background: #020617;
+    }
+    #gameCanvas { z-index: 2; }
     .placeholder {
+      z-index: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       gap: 12px;
-      color: #94a3b8;
       text-align: center;
       padding: 28px;
+      color: #94a3b8;
+      background: linear-gradient(180deg, rgba(15,23,42,0.95), rgba(2,6,23,0.95));
     }
     .placeholder-icon {
       width: 76px;
       height: 76px;
       border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.25);
+      border: 2px solid rgba(255,255,255,0.24);
       display: grid;
       place-items: center;
       font-size: 34px;
       background: rgba(255,255,255,0.06);
     }
-    .badge, .countdown {
+    .badge {
       position: absolute;
       z-index: 4;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(15, 23, 42, 0.74);
-      backdrop-filter: blur(12px);
-      color: #e2e8f0;
-    }
-    .badge {
-      top: 14px;
-      left: 14px;
+      top: 12px;
+      left: 12px;
       padding: 7px 10px;
       border-radius: 999px;
-      font-size: 12px;
-    }
-    .countdown {
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 54px;
-      font-weight: 900;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.45);
-    }
-    .hint-chip {
-      position: absolute;
-      z-index: 4;
-      left: 14px;
-      right: 14px;
-      bottom: 14px;
-      padding: 10px 12px;
-      border-radius: 18px;
-      background: rgba(15, 23, 42, 0.72);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(15,23,42,0.74);
+      border: 1px solid rgba(255,255,255,0.14);
+      backdrop-filter: blur(12px);
       color: #e2e8f0;
       font-size: 12px;
+    }
+    .message {
+      position: absolute;
+      z-index: 4;
+      left: 50%;
+      top: 45%;
+      transform: translate(-50%, -50%);
+      width: min(86%, 320px);
+      padding: 18px 16px;
+      border-radius: 24px;
       text-align: center;
-      line-height: 1.45;
-      backdrop-filter: blur(12px);
+      background: rgba(15,23,42,0.8);
+      border: 1px solid rgba(255,255,255,0.16);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.5);
+      display: none;
     }
+    .message strong { display: block; font-size: 28px; margin-bottom: 6px; }
+    .message span { color: #cbd5e1; font-size: 13px; line-height: 1.45; }
     .controls { display: grid; gap: 10px; }
-    .main-controls {
-      display: grid;
-      grid-template-columns: 1fr 76px 1fr;
-      align-items: center;
-      gap: 10px;
-    }
-    button, .file-button, a.download-link {
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button {
       appearance: none;
       border: 0;
-      border-radius: 999px;
       min-height: 48px;
-      padding: 0 16px;
+      border-radius: 999px;
+      padding: 0 14px;
       font-size: 15px;
-      font-weight: 750;
-      cursor: pointer;
+      font-weight: 800;
       color: #fff;
+      cursor: pointer;
       background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.14);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: transform 0.12s ease, opacity 0.12s ease, background 0.12s ease;
-      user-select: none;
+      transition: transform 0.12s ease, opacity 0.12s ease;
     }
-    button:active, .file-button:active, a.download-link:active { transform: scale(0.97); }
-    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button:active { transform: scale(0.97); }
+    button:disabled { opacity: 0.42; cursor: not-allowed; }
     .primary { background: linear-gradient(135deg, #2563eb, #7c3aed); }
-    .capture-button {
-      width: 76px;
-      height: 76px;
-      padding: 0;
-      background: #fff;
-      border: 6px solid rgba(255,255,255,0.35);
-      box-shadow: 0 0 0 5px rgba(255,255,255,0.12);
-    }
-    .capture-button::after {
-      content: "";
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: #f43f5e;
-      display: block;
-    }
-    .download-link { background: linear-gradient(135deg, #16a34a, #0f766e) !important; }
-    .file-button { background: rgba(255,255,255,0.1); }
-    input[type="file"] { display: none; }
+    .active { background: linear-gradient(135deg, #0891b2, #2563eb); }
     .status {
-      min-height: 24px;
+      min-height: 22px;
       color: #cbd5e1;
       text-align: center;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.45;
       white-space: pre-line;
     }
     .panel {
@@ -185,67 +148,46 @@
     .checks li.pass { color: #86efac; }
     .checks li.warn { color: #fde68a; }
     .checks li.fail { color: #fca5a5; }
-    .toggle-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .active-mode {
-      background: linear-gradient(135deg, #0891b2, #2563eb);
-    }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
   <main class="app">
     <header>
-      <h1>Palm Snap</h1>
-      <p class="subtitle">手のひらを見せると自動で写真を撮るカメラWebサイト</p>
+      <h1>Palm Stack</h1>
+      <p class="subtitle">手のひらを左右に動かして、落ちてくるブロックを積み上げるゲーム</p>
     </header>
 
-    <section class="camera-card">
-      <div class="badge" id="badge">Ready</div>
-      <div class="countdown" id="countdown">3</div>
+    <section class="stage-wrap" id="stageWrap">
       <video id="video" autoplay playsinline muted class="hidden"></video>
-      <canvas id="photoCanvas"></canvas>
-      <canvas id="overlayCanvas" class="overlay-canvas"></canvas>
-      <img id="selectedImage" class="selected-image" alt="選択した写真のプレビュー" />
+      <canvas id="gameCanvas"></canvas>
+      <div class="badge" id="badge">Ready</div>
+      <div class="message" id="messageBox">
+        <strong id="messageTitle">Palm Stack</strong>
+        <span id="messageText">カメラ起動後、手のひらを左右に動かしてください。</span>
+      </div>
       <div class="placeholder" id="placeholder">
         <div class="placeholder-icon">✋</div>
-        <div id="placeholderText">「カメラを起動」を押して<br>手のひらを見せてください</div>
+        <div id="placeholderText">カメラを起動して<br>手のひらを土台にしよう</div>
       </div>
-      <div class="hint-chip" id="hintChip">Open palm = auto shutter / 手のひらで自動撮影</div>
     </section>
 
     <section class="controls">
-      <button class="primary" id="startBtn">カメラを起動</button>
-
-      <div class="toggle-row">
-        <button id="palmModeBtn" class="active-mode">手のひら撮影 ON</button>
+      <button class="primary" id="startBtn">カメラを起動して開始</button>
+      <div class="row">
+        <button id="restartBtn">リスタート</button>
+        <button id="modeBtn" class="active">Palm Mode ON</button>
+      </div>
+      <div class="row">
         <button id="switchBtn" disabled>カメラ切替</button>
+        <button id="dropBtn">手動で落とす</button>
       </div>
-
-      <div class="main-controls">
-        <button id="cancelBtn" disabled>検出停止</button>
-        <button class="capture-button" id="captureBtn" disabled aria-label="写真を撮る"></button>
-        <button id="retakeBtn" disabled>撮り直し</button>
-      </div>
-
-      <label class="file-button" for="fileInput">写真を選ぶ / カメラで撮る</label>
-      <input id="fileInput" type="file" accept="image/*" capture="environment" />
-
-      <a id="downloadLink" class="download-link hidden" download="palm-snap.png">写真を保存</a>
-      <div class="status" id="status">カメラ許可が必要です。</div>
+      <div class="status" id="status">HTTPSまたはlocalhostでカメラが使えます。テスト時は画面を指で左右に動かせます。</div>
     </section>
 
     <section class="panel">
-      <strong>使い方</strong><br>
-      カメラを起動後、画面に開いた手のひらを見せてください。手が検出されると3秒カウントダウンして自動撮影します。誤撮影を避けるため、撮影後は「撮り直し」を押すまで次の自動撮影は止まります。
-    </section>
-
-    <section class="panel">
-      <strong>動作条件</strong><br>
-      カメラはHTTPSまたはlocalhostで動きます。手の検出にはMediaPipe HandsをCDNから読み込みます。ネットワーク制限がある環境では、手検出が使えない場合があります。
+      <strong>ルール</strong><br>
+      ブロックが土台またはタワーの中心に近ければ積めます。少しズレるとGOOD、ピッタリだとPERFECT。大きくズレるとMISSでゲームオーバーです。10個積めたらクリアです。
     </section>
 
     <section class="panel">
@@ -254,204 +196,419 @@
     </section>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
   <script>
+    const stageWrap = document.getElementById('stageWrap');
     const video = document.getElementById('video');
-    const photoCanvas = document.getElementById('photoCanvas');
-    const overlayCanvas = document.getElementById('overlayCanvas');
-    const selectedImage = document.getElementById('selectedImage');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
     const placeholder = document.getElementById('placeholder');
     const placeholderText = document.getElementById('placeholderText');
-    const startBtn = document.getElementById('startBtn');
-    const palmModeBtn = document.getElementById('palmModeBtn');
-    const switchBtn = document.getElementById('switchBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const captureBtn = document.getElementById('captureBtn');
-    const retakeBtn = document.getElementById('retakeBtn');
-    const downloadLink = document.getElementById('downloadLink');
-    const fileInput = document.getElementById('fileInput');
-    const statusEl = document.getElementById('status');
     const badge = document.getElementById('badge');
+    const messageBox = document.getElementById('messageBox');
+    const messageTitle = document.getElementById('messageTitle');
+    const messageText = document.getElementById('messageText');
+    const startBtn = document.getElementById('startBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const modeBtn = document.getElementById('modeBtn');
+    const switchBtn = document.getElementById('switchBtn');
+    const dropBtn = document.getElementById('dropBtn');
+    const statusEl = document.getElementById('status');
     const checks = document.getElementById('checks');
-    const countdownEl = document.getElementById('countdown');
-    const hintChip = document.getElementById('hintChip');
+
+    const game = {
+      w: 0,
+      h: 0,
+      running: false,
+      over: false,
+      clear: false,
+      score: 0,
+      combo: 0,
+      targetScore: 10,
+      platformX: 0,
+      targetPlatformX: 0,
+      platformY: 0,
+      platformW: 112,
+      platformH: 18,
+      palmSeen: false,
+      lastPalmAt: 0,
+      blocks: [],
+      falling: null,
+      particles: [],
+      flashText: '',
+      flashLife: 0,
+      cameraFacing: 'user',
+      palmMode: true,
+      manualControl: true,
+      nextDropAt: 0,
+      lastTime: 0
+    };
 
     let stream = null;
-    let facingMode = 'user';
-    let palmMode = true;
     let hands = null;
     let detectionLoopId = null;
-    let isCountingDown = false;
-    let photoLocked = false;
-    let lastPalmSeenAt = 0;
-    let countdownTimer = null;
-    let countdownValue = 3;
+    let animationId = null;
 
     function isSecureCameraContext() {
       return window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     }
 
-    function setStatus(message) { statusEl.textContent = message; }
+    function setStatus(text) { statusEl.textContent = text; }
 
-    function showPlaceholder(message) {
-      placeholderText.innerHTML = message;
+    function resizeCanvas() {
+      const rect = stageWrap.getBoundingClientRect();
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      canvas.width = Math.floor(rect.width * dpr);
+      canvas.height = Math.floor(rect.height * dpr);
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      game.w = rect.width;
+      game.h = rect.height;
+      game.platformY = game.h * 0.84;
+      if (!game.platformX) game.platformX = game.w / 2;
+      if (!game.targetPlatformX) game.targetPlatformX = game.w / 2;
+      clampPlatform();
+    }
+
+    function clamp(value, min, max) {
+      return Math.max(min, Math.min(max, value));
+    }
+
+    function clampPlatform() {
+      const half = game.platformW / 2;
+      game.targetPlatformX = clamp(game.targetPlatformX, half + 8, game.w - half - 8);
+      game.platformX = clamp(game.platformX, half + 8, game.w - half - 8);
+    }
+
+    function showMessage(title, text) {
+      messageTitle.textContent = title;
+      messageText.textContent = text;
+      messageBox.style.display = 'block';
+    }
+
+    function hideMessage() {
+      messageBox.style.display = 'none';
+    }
+
+    function showPlaceholder(text) {
+      placeholderText.innerHTML = text;
       placeholder.classList.remove('hidden');
-      video.classList.add('hidden');
-      photoCanvas.style.display = 'none';
-      selectedImage.style.display = 'none';
-      clearOverlay();
     }
 
-    function showVideo() {
+    function hidePlaceholder() {
       placeholder.classList.add('hidden');
-      selectedImage.style.display = 'none';
-      photoCanvas.style.display = 'none';
-      video.classList.remove('hidden');
     }
 
-    function showCanvas() {
-      placeholder.classList.add('hidden');
-      video.classList.add('hidden');
-      selectedImage.style.display = 'none';
-      photoCanvas.style.display = 'block';
-      clearOverlay();
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
     }
 
-    function showSelectedImage() {
-      placeholder.classList.add('hidden');
-      video.classList.add('hidden');
-      photoCanvas.style.display = 'none';
-      selectedImage.style.display = 'block';
-      clearOverlay();
-    }
-
-    function clearOverlay() {
-      const ctx = overlayCanvas.getContext('2d');
-      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-    }
-
-    function stopCamera() {
-      stopDetectionLoop();
-      stopCountdown();
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
-      }
-      video.srcObject = null;
-    }
-
-    function describeCameraError(error) {
-      const name = error && error.name ? error.name : 'UnknownError';
-      if (name === 'NotAllowedError' || name === 'SecurityError') {
-        if (!isSecureCameraContext()) return 'カメラがブロックされました。\nHTTPS、GitHub Pages、またはlocalhostで開いてください。';
-        return 'カメラ許可が拒否されています。\nブラウザのサイト設定でカメラを許可してから、もう一度押してください。';
-      }
-      if (name === 'NotFoundError' || name === 'DevicesNotFoundError') return '利用できるカメラが見つかりませんでした。';
-      if (name === 'NotReadableError' || name === 'TrackStartError') return 'カメラを他のアプリが使用中の可能性があります。';
-      if (name === 'OverconstrainedError' || name === 'ConstraintNotSatisfiedError') return '指定したカメラ条件に合いませんでした。別のカメラで試してください。';
-      return 'カメラを起動できませんでした。\nエラー: ' + name;
-    }
-
-    async function requestCamera(preferredFacingMode) {
-      const constraints = {
-        video: {
-          facingMode: { ideal: preferredFacingMode },
-          width: { ideal: 1280 },
-          height: { ideal: 1920 }
-        },
-        audio: false
+    function createBlock() {
+      const width = rand(58, 92);
+      const height = 26;
+      const colors = ['#38bdf8', '#a78bfa', '#fb7185', '#fbbf24', '#34d399'];
+      return {
+        x: rand(width / 2 + 12, game.w - width / 2 - 12),
+        y: -height - 12,
+        w: width,
+        h: height,
+        vy: rand(2.0, 2.7) + game.score * 0.08,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        landed: false,
+        angle: rand(-0.035, 0.035)
       };
-      try {
-        return await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (firstError) {
-        if (firstError.name === 'OverconstrainedError' || firstError.name === 'ConstraintNotSatisfiedError') {
-          return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        }
-        throw firstError;
+    }
+
+    function resetGame() {
+      resizeCanvas();
+      game.running = true;
+      game.over = false;
+      game.clear = false;
+      game.score = 0;
+      game.combo = 0;
+      game.blocks = [];
+      game.particles = [];
+      game.falling = createBlock();
+      game.flashText = 'STACK 10 BLOCKS';
+      game.flashLife = 95;
+      game.platformX = game.w / 2;
+      game.targetPlatformX = game.w / 2;
+      game.nextDropAt = 0;
+      hideMessage();
+      hidePlaceholder();
+      badge.textContent = game.palmMode ? 'Palm Mode' : 'Touch Mode';
+      setStatus(game.palmMode ? '手のひらを左右に動かして土台を操作してください。' : '画面を指で左右に動かして土台を操作してください。');
+      ensureAnimation();
+    }
+
+    function towerTopY() {
+      return game.platformY - game.blocks.length * 28;
+    }
+
+    function towerCenterX() {
+      if (game.blocks.length === 0) return game.platformX;
+      return game.blocks[game.blocks.length - 1].x;
+    }
+
+    function addParticles(x, y, color, count) {
+      for (let i = 0; i < count; i++) {
+        game.particles.push({
+          x, y,
+          vx: rand(-2.5, 2.5),
+          vy: rand(-4, -1),
+          life: rand(28, 46),
+          color,
+          size: rand(3, 7)
+        });
       }
+    }
+
+    function settleBlock(block, rating) {
+      const level = game.blocks.length;
+      block.y = game.platformY - game.platformH / 2 - block.h / 2 - level * 28;
+      block.x = towerCenterX() * 0.62 + block.x * 0.38;
+      block.landed = true;
+      game.blocks.push(block);
+      game.score += 1;
+      game.combo = rating === 'PERFECT' ? game.combo + 1 : 0;
+      game.flashText = rating;
+      game.flashLife = 55;
+      addParticles(block.x, block.y, block.color, rating === 'PERFECT' ? 22 : 12);
+      if (game.score >= game.targetScore) {
+        game.clear = true;
+        game.running = false;
+        game.flashText = 'CLEAR!';
+        game.flashLife = 200;
+        addParticles(block.x, block.y, '#86efac', 60);
+        showMessage('CLEAR!', '10個積めました。リスタートでもう一度遊べます。');
+        badge.textContent = 'Clear';
+        setStatus('クリア！10個積めました。');
+      } else {
+        game.falling = createBlock();
+      }
+    }
+
+    function missBlock() {
+      game.over = true;
+      game.running = false;
+      game.flashText = 'MISS!';
+      game.flashLife = 160;
+      addParticles(game.falling.x, game.falling.y, '#f87171', 30);
+      showMessage('GAME OVER', `${game.score}個積めました。中心からズレすぎました。`);
+      badge.textContent = 'Game Over';
+      setStatus(`ゲームオーバー。${game.score}個積めました。`);
+    }
+
+    function updateGame() {
+      game.platformX += (game.targetPlatformX - game.platformX) * 0.22;
+      clampPlatform();
+
+      if (game.running && game.falling) {
+        game.falling.y += game.falling.vy;
+        const landingY = towerTopY() - game.falling.h / 2;
+        if (game.falling.y >= landingY) {
+          const baseX = towerCenterX();
+          const offset = Math.abs(game.falling.x - baseX);
+          const perfectRange = 14;
+          const safeRange = Math.max(34, Math.min(game.falling.w, game.platformW) * 0.52);
+          if (offset <= perfectRange) settleBlock(game.falling, 'PERFECT');
+          else if (offset <= safeRange) settleBlock(game.falling, 'GOOD');
+          else missBlock();
+        }
+      }
+
+      for (let i = game.particles.length - 1; i >= 0; i--) {
+        const p = game.particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.14;
+        p.life -= 1;
+        if (p.life <= 0) game.particles.splice(i, 1);
+      }
+
+      if (game.flashLife > 0) game.flashLife -= 1;
+    }
+
+    function drawRoundedRect(x, y, w, h, r, color, stroke) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.beginPath();
+      ctx.roundRect(-w / 2, -h / 2, w, h, r);
+      ctx.fillStyle = color;
+      ctx.fill();
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawBackground() {
+      const g = ctx.createLinearGradient(0, 0, 0, game.h);
+      g.addColorStop(0, 'rgba(15,23,42,0.2)');
+      g.addColorStop(1, 'rgba(2,6,23,0.82)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, game.w, game.h);
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let y = 60; y < game.h; y += 42) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(game.w, y);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawHUD() {
+      ctx.save();
+      ctx.fillStyle = 'rgba(15,23,42,0.74)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(game.w - 116, 12, 104, 44, 16);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '800 20px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(`${game.score}/${game.targetScore}`, game.w - 64, 40);
+
+      ctx.fillStyle = 'rgba(15,23,42,0.74)';
+      ctx.beginPath();
+      ctx.roundRect(12, game.h - 46, game.w - 24, 34, 17);
+      ctx.fill();
+      ctx.fillStyle = game.palmSeen ? '#86efac' : '#fcd34d';
+      ctx.font = '750 12px system-ui';
+      ctx.textAlign = 'center';
+      const modeText = game.palmMode ? (game.palmSeen ? 'Palm detected: move your hand left/right' : 'Show your palm or drag screen to test') : 'Touch mode: drag screen left/right';
+      ctx.fillText(modeText, game.w / 2, game.h - 24);
+      ctx.restore();
+    }
+
+    function drawPlatform() {
+      const glow = ctx.createRadialGradient(game.platformX, game.platformY, 4, game.platformX, game.platformY, 90);
+      glow.addColorStop(0, game.palmSeen || !game.palmMode ? 'rgba(34,197,94,0.36)' : 'rgba(250,204,21,0.28)');
+      glow.addColorStop(1, 'rgba(34,197,94,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(game.platformX - 100, game.platformY - 70, 200, 120);
+      drawRoundedRect(game.platformX, game.platformY, game.platformW, game.platformH, 9, game.palmSeen || !game.palmMode ? '#22c55e' : '#facc15', 'rgba(255,255,255,0.6)');
+      ctx.save();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.font = '900 13px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('PALM', game.platformX, game.platformY + 5);
+      ctx.restore();
+    }
+
+    function drawBlock(block, alpha = 1) {
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(block.x, block.y);
+      ctx.rotate(block.angle || 0);
+      ctx.shadowColor = block.color;
+      ctx.shadowBlur = 18;
+      ctx.beginPath();
+      ctx.roundRect(-block.w / 2, -block.h / 2, block.w, block.h, 8);
+      ctx.fillStyle = block.color;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = 'rgba(255,255,255,0.62)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.22)';
+      ctx.fillRect(-block.w / 2 + 8, -block.h / 2 + 5, block.w - 16, 4);
+      ctx.restore();
+    }
+
+    function drawTowerGuide() {
+      const x = towerCenterX();
+      const top = towerTopY();
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.setLineDash([5, 7]);
+      ctx.beginPath();
+      ctx.moveTo(x, top - 44);
+      ctx.lineTo(x, game.platformY + 18);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+    }
+
+    function drawParticles() {
+      for (const p of game.particles) {
+        ctx.save();
+        ctx.globalAlpha = clamp(p.life / 38, 0, 1);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function drawFlashText() {
+      if (game.flashLife <= 0 || !game.flashText) return;
+      ctx.save();
+      ctx.globalAlpha = clamp(game.flashLife / 45, 0, 1);
+      ctx.font = '950 34px system-ui';
+      ctx.textAlign = 'center';
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = 'rgba(2,6,23,0.85)';
+      ctx.fillStyle = game.flashText.includes('MISS') ? '#fb7185' : game.flashText.includes('PERFECT') ? '#facc15' : '#ffffff';
+      ctx.strokeText(game.flashText, game.w / 2, game.h * 0.25);
+      ctx.fillText(game.flashText, game.w / 2, game.h * 0.25);
+      ctx.restore();
+    }
+
+    function render() {
+      updateGame();
+      drawBackground();
+      drawHUD();
+      drawTowerGuide();
+      drawPlatform();
+      for (const block of game.blocks) drawBlock(block);
+      if (game.falling && !game.clear) drawBlock(game.falling);
+      drawParticles();
+      drawFlashText();
+      animationId = requestAnimationFrame(render);
+    }
+
+    function ensureAnimation() {
+      if (!animationId) animationId = requestAnimationFrame(render);
     }
 
     async function initHands() {
       if (hands) return true;
       if (!window.Hands) {
-        setStatus('手のひら検出ライブラリを読み込めませんでした。ネットワークまたはCDN制限を確認してください。手動撮影は使えます。');
+        setStatus('MediaPipe Handsを読み込めませんでした。画面ドラッグでテストできます。');
         return false;
       }
-      hands = new Hands({
-        locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
+      hands = new Hands({ locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
       hands.setOptions({
         maxNumHands: 1,
         modelComplexity: 1,
-        minDetectionConfidence: 0.72,
-        minTrackingConfidence: 0.66
+        minDetectionConfidence: 0.7,
+        minTrackingConfidence: 0.62
       });
-      hands.onResults(onHandResults);
+      hands.onResults(onHandsResults);
       return true;
     }
 
-    async function startCamera() {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setStatus('このブラウザはカメラ撮影に対応していません。下の写真選択を使ってください。');
-        startBtn.disabled = true;
-        return;
-      }
-      if (!isSecureCameraContext()) {
-        setStatus('このページは安全な接続ではありません。HTTPSまたはlocalhostで開くとカメラが使えます。');
-        showPlaceholder('HTTPSまたはlocalhostで<br>開いてください');
-        return;
-      }
-      try {
-        stopCamera();
-        photoLocked = false;
-        setStatus('カメラを起動中...');
-        badge.textContent = 'Requesting Permission';
-        stream = await requestCamera(facingMode);
-        video.srcObject = stream;
-        await video.play();
-        showVideo();
-        resizeOverlay();
-        captureBtn.disabled = false;
-        switchBtn.disabled = false;
-        cancelBtn.disabled = false;
-        retakeBtn.disabled = true;
-        downloadLink.classList.add('hidden');
-        startBtn.textContent = 'カメラ再起動';
-        badge.textContent = palmMode ? 'Palm Detection ON' : 'Manual Mode';
-        setStatus(palmMode ? '手のひらを画面に見せると自動撮影します。' : '中央の赤いボタンで撮影できます。');
-        if (palmMode) await startDetectionLoop();
-      } catch (error) {
-        console.error(error);
-        stopCamera();
-        captureBtn.disabled = true;
-        switchBtn.disabled = true;
-        cancelBtn.disabled = true;
-        retakeBtn.disabled = true;
-        badge.textContent = 'Camera Blocked';
-        showPlaceholder('カメラを起動できません<br>写真選択も使えます');
-        setStatus(describeCameraError(error));
-      }
-    }
-
-    function resizeOverlay() {
-      const rect = overlayCanvas.getBoundingClientRect();
-      const dpr = Math.max(1, window.devicePixelRatio || 1);
-      overlayCanvas.width = Math.floor(rect.width * dpr);
-      overlayCanvas.height = Math.floor(rect.height * dpr);
-    }
-
     async function startDetectionLoop() {
-      if (!stream || photoLocked) return;
+      if (!stream || !game.palmMode) return;
       const ok = await initHands();
       if (!ok) return;
       stopDetectionLoop();
       const detect = async () => {
-        if (!stream || !palmMode || photoLocked) return;
+        if (!stream || !game.palmMode) return;
         if (video.readyState >= 2) {
-          try { await hands.send({ image: video }); } catch (err) { console.error(err); }
+          try { await hands.send({ image: video }); } catch (error) { console.error(error); }
         }
         detectionLoopId = requestAnimationFrame(detect);
       };
@@ -465,266 +622,198 @@
       }
     }
 
+    function stopCamera() {
+      stopDetectionLoop();
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      video.srcObject = null;
+    }
+
     function fingerExtended(landmarks, tip, pip) {
       return landmarks[tip].y < landmarks[pip].y;
     }
 
-    function thumbExtended(landmarks) {
-      const wrist = landmarks[0];
-      const thumbTip = landmarks[4];
-      const indexMcp = landmarks[5];
-      return Math.abs(thumbTip.x - wrist.x) > Math.abs(indexMcp.x - wrist.x) * 0.78;
-    }
-
     function isOpenPalm(landmarks) {
       if (!landmarks || landmarks.length < 21) return false;
-      const extended = [
-        thumbExtended(landmarks),
+      const count = [
         fingerExtended(landmarks, 8, 6),
         fingerExtended(landmarks, 12, 10),
         fingerExtended(landmarks, 16, 14),
         fingerExtended(landmarks, 20, 18)
-      ];
-      const count = extended.filter(Boolean).length;
-      const wrist = landmarks[0];
-      const middleTip = landmarks[12];
-      const palmTallEnough = Math.abs(middleTip.y - wrist.y) > 0.16;
-      return count >= 4 && palmTallEnough;
+      ].filter(Boolean).length;
+      const tall = Math.abs(landmarks[12].y - landmarks[0].y) > 0.15;
+      return count >= 3 && tall;
     }
 
-    function drawHand(landmarks, isPalm) {
-      resizeOverlay();
-      const ctx = overlayCanvas.getContext('2d');
-      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-      const w = overlayCanvas.width;
-      const h = overlayCanvas.height;
-      ctx.save();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = isPalm ? 'rgba(34,197,94,0.95)' : 'rgba(250,204,21,0.9)';
-      ctx.fillStyle = isPalm ? 'rgba(34,197,94,0.95)' : 'rgba(250,204,21,0.9)';
-      const points = landmarks.map(p => ({ x: p.x * w, y: p.y * h }));
-      const connections = [[0,1],[1,2],[2,3],[3,4],[0,5],[5,6],[6,7],[7,8],[5,9],[9,10],[10,11],[11,12],[9,13],[13,14],[14,15],[15,16],[13,17],[17,18],[18,19],[19,20],[0,17]];
-      for (const [a,b] of connections) {
-        ctx.beginPath();
-        ctx.moveTo(points[a].x, points[a].y);
-        ctx.lineTo(points[b].x, points[b].y);
-        ctx.stroke();
-      }
-      for (const p of points) {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    function onHandResults(results) {
-      if (!palmMode || photoLocked || !stream) return;
+    function onHandsResults(results) {
       const landmarks = results.multiHandLandmarks && results.multiHandLandmarks[0];
-      if (!landmarks) {
-        clearOverlay();
-        if (!isCountingDown) {
-          badge.textContent = 'Show Palm';
-          hintChip.textContent = '手のひらをカメラに向けてください';
-        }
+      if (!landmarks || !isOpenPalm(landmarks)) {
+        game.palmSeen = false;
+        if (game.palmMode) badge.textContent = 'Show Palm';
         return;
       }
-      const palm = isOpenPalm(landmarks);
-      drawHand(landmarks, palm);
-      if (palm) {
-        lastPalmSeenAt = Date.now();
-        badge.textContent = 'Palm Detected';
-        hintChip.textContent = '手のひら検出中... 自動撮影します';
-        if (!isCountingDown) startCountdown();
-      } else {
-        badge.textContent = 'Hand Detected';
-        hintChip.textContent = '指を開いて、手のひらを正面に見せてください';
+      const palmX = landmarks[9].x;
+      game.palmSeen = true;
+      game.lastPalmAt = Date.now();
+      game.targetPlatformX = (1 - palmX) * game.w;
+      clampPlatform();
+      if (game.palmMode) badge.textContent = 'Palm Tracking';
+    }
+
+    async function requestCamera(facing) {
+      const constraints = {
+        video: {
+          facingMode: { ideal: facing },
+          width: { ideal: 960 },
+          height: { ideal: 1280 }
+        },
+        audio: false
+      };
+      try {
+        return await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (error) {
+        if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
+          return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        }
+        throw error;
       }
     }
 
-    function startCountdown() {
-      isCountingDown = true;
-      countdownValue = 3;
-      countdownEl.textContent = countdownValue;
-      countdownEl.style.display = 'flex';
-      setStatus('手のひらを検出しました。3秒後に撮影します。');
-      countdownTimer = setInterval(() => {
-        const palmStillVisible = Date.now() - lastPalmSeenAt < 850;
-        if (!palmStillVisible) {
-          stopCountdown();
-          setStatus('手のひらが外れました。もう一度見せてください。');
-          return;
-        }
-        countdownValue -= 1;
-        if (countdownValue <= 0) {
-          stopCountdown();
-          capturePhoto('palm');
-          return;
-        }
-        countdownEl.textContent = countdownValue;
-      }, 1000);
-    }
-
-    function stopCountdown() {
-      isCountingDown = false;
-      countdownEl.style.display = 'none';
-      if (countdownTimer) {
-        clearInterval(countdownTimer);
-        countdownTimer = null;
+    function describeCameraError(error) {
+      const name = error && error.name ? error.name : 'UnknownError';
+      if (name === 'NotAllowedError' || name === 'SecurityError') {
+        if (!isSecureCameraContext()) return 'HTTPSまたはlocalhostで開いてください。カメラがブロックされています。';
+        return 'カメラ許可が拒否されています。ブラウザ設定からカメラを許可してください。画面ドラッグでテストはできます。';
       }
+      if (name === 'NotFoundError') return 'カメラが見つかりません。画面ドラッグでテストできます。';
+      return 'カメラを起動できませんでした: ' + name + '。画面ドラッグでテストできます。';
     }
 
-    function capturePhoto(source) {
-      if (!stream || !video.videoWidth || !video.videoHeight) {
-        setStatus('まだカメラ映像の準備ができていません。数秒待ってから撮影してください。');
+    async function startCameraAndGame() {
+      resetGame();
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showPlaceholder('このブラウザはカメラ非対応です<br>画面ドラッグで遊べます');
+        setStatus('カメラ非対応です。画面を指で左右に動かしてテストしてください。');
         return;
       }
-      photoLocked = true;
-      stopDetectionLoop();
-      stopCountdown();
-      const width = video.videoWidth;
-      const height = video.videoHeight;
-      photoCanvas.width = width;
-      photoCanvas.height = height;
-      const ctx = photoCanvas.getContext('2d');
-      if (facingMode === 'user') {
-        ctx.translate(width, 0);
-        ctx.scale(-1, 1);
+      if (!isSecureCameraContext()) {
+        showPlaceholder('HTTPSまたはlocalhostで<br>カメラが使えます');
+        setStatus('安全な接続ではないためカメラは使えません。画面ドラッグでテストできます。');
+        return;
       }
-      ctx.drawImage(video, 0, 0, width, height);
-      downloadLink.href = photoCanvas.toDataURL('image/png');
-      downloadLink.download = 'palm-snap-' + new Date().toISOString().replace(/[:.]/g, '-') + '.png';
-      showCanvas();
-      downloadLink.classList.remove('hidden');
-      captureBtn.disabled = true;
-      retakeBtn.disabled = false;
-      cancelBtn.disabled = true;
-      badge.textContent = source === 'palm' ? 'Palm Shot Captured' : 'Captured Photo';
-      hintChip.textContent = '撮影完了。保存または撮り直しできます。';
-      setStatus('撮影完了。保存または撮り直しできます。');
-    }
-
-    function retakePhoto() {
-      photoLocked = false;
-      if (stream) {
-        showVideo();
-        captureBtn.disabled = false;
+      try {
+        setStatus('カメラを起動中...');
+        stream = await requestCamera(game.cameraFacing);
+        video.srcObject = stream;
+        await video.play();
+        video.classList.remove('hidden');
+        hidePlaceholder();
         switchBtn.disabled = false;
-        cancelBtn.disabled = false;
-        retakeBtn.disabled = true;
-        downloadLink.classList.add('hidden');
-        badge.textContent = palmMode ? 'Palm Detection ON' : 'Manual Mode';
-        hintChip.textContent = palmMode ? 'Open palm = auto shutter / 手のひらで自動撮影' : '中央のボタンで撮影できます';
-        setStatus(palmMode ? '手のひらを画面に見せると自動撮影します。' : 'もう一度撮影できます。');
-        if (palmMode) startDetectionLoop();
-      } else {
-        startCamera();
+        setStatus('手のひらを左右に動かして土台を操作してください。');
+        if (game.palmMode) await startDetectionLoop();
+      } catch (error) {
+        console.error(error);
+        stopCamera();
+        showPlaceholder('カメラ起動に失敗<br>画面ドラッグで遊べます');
+        setStatus(describeCameraError(error));
       }
     }
 
     async function switchCamera() {
-      facingMode = facingMode === 'environment' ? 'user' : 'environment';
-      await startCamera();
+      game.cameraFacing = game.cameraFacing === 'user' ? 'environment' : 'user';
+      await startCameraAndGame();
     }
 
-    function togglePalmMode() {
-      palmMode = !palmMode;
-      palmModeBtn.textContent = palmMode ? '手のひら撮影 ON' : '手のひら撮影 OFF';
-      palmModeBtn.classList.toggle('active-mode', palmMode);
-      badge.textContent = palmMode ? 'Palm Detection ON' : 'Manual Mode';
-      hintChip.textContent = palmMode ? 'Open palm = auto shutter / 手のひらで自動撮影' : '中央のボタンで手動撮影できます';
-      if (palmMode && stream && !photoLocked) startDetectionLoop();
-      if (!palmMode) {
-        stopDetectionLoop();
-        stopCountdown();
-        clearOverlay();
-      }
+    function toggleMode() {
+      game.palmMode = !game.palmMode;
+      modeBtn.textContent = game.palmMode ? 'Palm Mode ON' : 'Touch Mode';
+      modeBtn.classList.toggle('active', game.palmMode);
+      game.palmSeen = false;
+      if (game.palmMode && stream) startDetectionLoop();
+      else stopDetectionLoop();
+      badge.textContent = game.palmMode ? 'Palm Mode' : 'Touch Mode';
+      setStatus(game.palmMode ? '手のひらで操作します。画面ドラッグも予備操作として使えます。' : '画面ドラッグで操作します。');
     }
 
-    function cancelDetection() {
-      stopDetectionLoop();
-      stopCountdown();
-      clearOverlay();
-      badge.textContent = 'Detection Paused';
-      hintChip.textContent = '手のひら検出を停止しました。手動撮影は使えます。';
-      setStatus('検出を停止しました。再開するには「カメラ再起動」または手のひら撮影をONにしてください。');
+    function manualDrop() {
+      if (!game.falling || !game.running) return;
+      game.falling.x = towerCenterX();
+      game.falling.y = towerTopY() - game.falling.h / 2;
     }
 
-    function loadSelectedFile(file) {
-      if (!file || !file.type.startsWith('image/')) {
-        setStatus('画像ファイルを選んでください。');
-        return;
-      }
-      stopCamera();
-      const imageUrl = URL.createObjectURL(file);
-      selectedImage.onload = () => URL.revokeObjectURL(imageUrl);
-      selectedImage.src = imageUrl;
-      downloadLink.href = imageUrl;
-      downloadLink.download = file.name || 'selected-photo.png';
-      showSelectedImage();
-      captureBtn.disabled = true;
-      switchBtn.disabled = true;
-      cancelBtn.disabled = true;
-      retakeBtn.disabled = true;
-      downloadLink.classList.remove('hidden');
-      badge.textContent = 'Selected Photo';
-      hintChip.textContent = '写真を読み込みました。';
-      startBtn.textContent = 'カメラを起動';
-      setStatus('写真を読み込みました。保存できます。');
+    function pointerToPlatform(clientX) {
+      const rect = stageWrap.getBoundingClientRect();
+      game.targetPlatformX = clientX - rect.left;
+      clampPlatform();
+      game.manualControl = true;
     }
+
+    stageWrap.addEventListener('pointerdown', event => {
+      stageWrap.setPointerCapture(event.pointerId);
+      pointerToPlatform(event.clientX);
+    });
+    stageWrap.addEventListener('pointermove', event => pointerToPlatform(event.clientX));
 
     function addCheck(label, state, detail) {
       const li = document.createElement('li');
       li.className = state;
-      li.textContent = label + ': ' + detail;
+      li.textContent = `${label}: ${detail}`;
       checks.appendChild(li);
     }
 
-    function runSelfTests() {
+    function runTests() {
       checks.innerHTML = '';
-      addCheck('Secure context', isSecureCameraContext() ? 'pass' : 'fail', isSecureCameraContext() ? 'OK' : 'HTTPSまたはlocalhostではありません');
-      addCheck('mediaDevices API', navigator.mediaDevices ? 'pass' : 'fail', navigator.mediaDevices ? 'OK' : '未対応');
-      addCheck('getUserMedia API', navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? 'pass' : 'fail', navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? 'OK' : '未対応');
-      addCheck('MediaPipe Hands', window.Hands ? 'pass' : 'warn', window.Hands ? '読み込み済み' : '未読み込み。CDN制限の可能性');
-      addCheck('Canvas capture', photoCanvas.getContext ? 'pass' : 'fail', photoCanvas.getContext ? 'OK' : '未対応');
-      const fakeOpenPalm = [
-        [0.5,0.85],[0.45,0.7],[0.4,0.58],[0.35,0.48],[0.28,0.39],
-        [0.45,0.62],[0.43,0.47],[0.42,0.34],[0.41,0.2],
-        [0.5,0.6],[0.5,0.43],[0.5,0.28],[0.5,0.13],
-        [0.55,0.62],[0.58,0.47],[0.6,0.34],[0.62,0.22],
-        [0.6,0.66],[0.66,0.53],[0.7,0.42],[0.74,0.31]
+      addCheck('Secure context', isSecureCameraContext() ? 'pass' : 'warn', isSecureCameraContext() ? 'OK' : 'カメラはHTTPS/localhostのみ');
+      addCheck('Canvas', canvas.getContext ? 'pass' : 'fail', canvas.getContext ? 'OK' : '未対応');
+      addCheck('getUserMedia', navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? 'pass' : 'warn', navigator.mediaDevices && navigator.mediaDevices.getUserMedia ? 'OK' : 'カメラ非対応');
+      addCheck('MediaPipe Hands', window.Hands ? 'pass' : 'warn', window.Hands ? '読み込み済み' : '未読み込み');
+      const oldW = game.w || 390;
+      const oldH = game.h || 690;
+      game.w = oldW;
+      game.h = oldH;
+      game.platformY = oldH * 0.84;
+      game.platformX = oldW / 2;
+      game.blocks = [];
+      const firstTop = towerTopY();
+      game.blocks.push({x: oldW / 2, y: firstTop - 13, w: 70, h: 26});
+      addCheck('Tower top updates', towerTopY() < firstTop ? 'pass' : 'fail', towerTopY() < firstTop ? 'OK' : '積み上げ高さが更新されません');
+      const fakePalm = [
+        [0.5,0.85],[0.48,0.72],[0.46,0.65],[0.44,0.6],[0.42,0.55],
+        [0.44,0.64],[0.43,0.49],[0.42,0.35],[0.41,0.22],
+        [0.5,0.62],[0.5,0.46],[0.5,0.3],[0.5,0.16],
+        [0.56,0.64],[0.58,0.5],[0.6,0.36],[0.62,0.24],
+        [0.61,0.68],[0.66,0.55],[0.7,0.43],[0.74,0.33]
       ].map(([x,y]) => ({x,y,z:0}));
-      const fakeFist = [
-        [0.5,0.85],[0.48,0.72],[0.48,0.65],[0.48,0.6],[0.49,0.58],
-        [0.45,0.64],[0.46,0.6],[0.47,0.58],[0.48,0.6],
-        [0.5,0.64],[0.5,0.59],[0.5,0.57],[0.5,0.6],
-        [0.55,0.64],[0.54,0.6],[0.53,0.58],[0.52,0.6],
-        [0.6,0.66],[0.58,0.62],[0.56,0.6],[0.54,0.62]
-      ].map(([x,y]) => ({x,y,z:0}));
-      addCheck('Palm heuristic open hand', isOpenPalm(fakeOpenPalm) ? 'pass' : 'fail', isOpenPalm(fakeOpenPalm) ? 'OK' : '開いた手を検出できません');
-      addCheck('Palm heuristic fist', !isOpenPalm(fakeFist) ? 'pass' : 'fail', !isOpenPalm(fakeFist) ? 'OK' : '握り手を誤検出しています');
+      addCheck('Open palm heuristic', isOpenPalm(fakePalm) ? 'pass' : 'fail', isOpenPalm(fakePalm) ? 'OK' : '開いた手を検出できません');
+      game.blocks = [];
     }
 
-    startBtn.addEventListener('click', startCamera);
-    palmModeBtn.addEventListener('click', togglePalmMode);
+    startBtn.addEventListener('click', startCameraAndGame);
+    restartBtn.addEventListener('click', resetGame);
+    modeBtn.addEventListener('click', toggleMode);
     switchBtn.addEventListener('click', switchCamera);
-    cancelBtn.addEventListener('click', cancelDetection);
-    captureBtn.addEventListener('click', () => capturePhoto('manual'));
-    retakeBtn.addEventListener('click', retakePhoto);
-    fileInput.addEventListener('change', event => loadSelectedFile(event.target.files[0]));
-    window.addEventListener('resize', resizeOverlay);
+    dropBtn.addEventListener('click', manualDrop);
+    window.addEventListener('resize', () => { resizeCanvas(); runTests(); });
     window.addEventListener('beforeunload', stopCamera);
 
-    setTimeout(runSelfTests, 700);
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setStatus('このブラウザはカメラ撮影に対応していません。下の「写真を選ぶ / カメラで撮る」を使ってください。');
-      startBtn.disabled = true;
-      badge.textContent = 'Fallback Only';
-    } else if (!isSecureCameraContext()) {
-      setStatus('カメラ利用にはHTTPSまたはlocalhostが必要です。');
-      badge.textContent = 'HTTPS Required';
+    if (!CanvasRenderingContext2D.prototype.roundRect) {
+      CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+        const radius = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+        this.moveTo(x + radius, y);
+        this.arcTo(x + w, y, x + w, y + h, radius);
+        this.arcTo(x + w, y + h, x, y + h, radius);
+        this.arcTo(x, y + h, x, y, radius);
+        this.arcTo(x, y, x + w, y, radius);
+        return this;
+      };
     }
+
+    resizeCanvas();
+    runTests();
+    ensureAnimation();
+    showMessage('Palm Stack', '手のひらを左右に動かして、10個のブロックを積み上げよう。');
   </script>
 </body>
 </html>
